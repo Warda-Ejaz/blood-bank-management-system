@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Manage Data</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+* { transition: all 0.3s ease; }
+</style>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-900">
+
+<!-- 🔐 AUTH -->
+<script>
+if(!localStorage.getItem("currentUser")){
+window.location.href="login.html";
+}
+</script>
+
+<!-- 🔴 NAVBAR -->
+<nav class="bg-white text-red-700 shadow-md sticky top-0 z-50">
+<div class="container mx-auto flex justify-between items-center px-4 py-3">
+
+<h1 class="text-xl font-bold">🩸 BloodBank Admin</h1>
+
+<ul class="hidden md:flex gap-6 font-medium">
+<li><a href="home.html">Home</a></li>
+<li><a href="donor.html">Donors</a></li>
+<li><a href="search.html">Search</a></li>
+<li><a href="availability.html">Availability</a></li>
+<li><a href="request.html">Request</a></li>
+<li><a href="matches.html">Matches</a></li>
+<li class="text-red-600 font-bold underline">Manage</li>
+<li><button onclick="logout()" class="text-red-600 font-bold">Logout</button></li>
+</ul>
+
+<button id="menuBtn" class="md:hidden text-xl"><i class="fas fa-bars"></i></button>
+</div>
+
+<div id="mobileMenu" class="hidden flex-col md:hidden bg-white px-4 pb-4 space-y-3">
+<a href="home.html">Home</a>
+<a href="donor.html">Donors</a>
+<a href="search.html">Search</a>
+<a href="availability.html">Availability</a>
+<a href="request.html">Request</a>
+<a href="matches.html">Matches</a>
+<a href="manage.html">Manage</a>
+<button onclick="logout()" class="text-red-600 font-bold">Logout</button>
+</div>
+</nav>
+
+<!-- 🔥 HERO -->
+<section class="relative py-16 bg-gradient-to-br from-red-900 via-red-700 to-red-500 text-white text-center">
+<div data-aos="fade-down">
+<h1 class="text-4xl font-bold mb-2">Admin Dashboard 🧾</h1>
+<p>Manage donors and blood requests</p>
+</div>
+</section>
+
+<!-- 📊 CONTENT -->
+<section class="px-4 py-10">
+
+<div class="max-w-6xl mx-auto space-y-10">
+
+<!-- SEARCH -->
+<div class="bg-white p-4 rounded-2xl shadow-lg flex gap-3" data-aos="zoom-in">
+<input type="text" id="searchInput"
+placeholder="Search by name or city..."
+class="w-full p-3 border rounded-lg">
+
+<button onclick="searchData()"
+class="bg-red-600 text-white px-6 rounded-lg hover:bg-red-700">
+Search
+</button>
+
+<button onclick="resetData()"
+class="bg-gray-200 px-4 rounded-lg">
+Reset
+</button>
+</div>
+
+<!-- DONORS TABLE -->
+<div class="bg-white p-6 rounded-2xl shadow-xl" data-aos="fade-up">
+
+<h2 class="text-xl font-bold mb-4 text-red-600">Donors</h2>
+
+<div class="overflow-x-auto">
+<table class="w-full border">
+<thead class="bg-red-600 text-white">
+<tr>
+<th class="p-2">Name</th>
+<th class="p-2">Age</th>
+<th class="p-2">Blood</th>
+<th class="p-2">City</th>
+<th class="p-2">Phone</th>
+<th class="p-2">Action</th>
+</tr>
+</thead>
+<tbody id="donorTable" class="text-center"></tbody>
+</table>
+</div>
+
+<p id="noDonors" class="hidden text-center text-gray-500 mt-4">
+No donors found
+</p>
+
+</div>
+
+<!-- REQUESTS TABLE -->
+<div class="bg-white p-6 rounded-2xl shadow-xl" data-aos="fade-up">
+
+<h2 class="text-xl font-bold mb-4 text-red-600">Requests</h2>
+
+<div class="overflow-x-auto">
+<table class="w-full border">
+<thead class="bg-red-600 text-white">
+<tr>
+<th class="p-2">Patient</th>
+<th class="p-2">Blood</th>
+<th class="p-2">Units</th>
+<th class="p-2">City</th>
+<th class="p-2">Phone</th>
+<th class="p-2">Action</th>
+</tr>
+</thead>
+<tbody id="requestTable" class="text-center"></tbody>
+</table>
+</div>
+
+<p id="noRequests" class="hidden text-center text-gray-500 mt-4">
+No requests found
+</p>
+
+</div>
+
+</div>
+</section>
+
+<!-- 🔻 FOOTER -->
+<footer class="bg-gray-900 text-gray-300 py-10">
+<p class="text-center">© 2026 Blood | Bank Admin Panel</p>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script>
+
+AOS.init();
+
+document.getElementById("menuBtn").onclick = function(){
+  document.getElementById("mobileMenu").classList.toggle("hidden");
+};
+
+function logout(){
+  localStorage.removeItem("currentUser");
+
+  let toast = document.createElement("div");
+  toast.innerText = "Logged out successfully";
+  toast.className = "fixed top-6 right-6 bg-green-600 text-white px-5 py-3 rounded-lg shadow-lg z-50";
+
+  document.body.appendChild(toast);
+
+  setTimeout(()=>{
+    toast.remove();
+    window.location.href="login.html";
+  }, 1500);
+}
+
+// LOAD DATA
+function loadData(){
+
+let donors = JSON.parse(localStorage.getItem("donors")) || [];
+let requests = JSON.parse(localStorage.getItem("requests")) || [];
+
+let donorTable = document.getElementById("donorTable");
+let requestTable = document.getElementById("requestTable");
+
+donorTable.innerHTML="";
+requestTable.innerHTML="";
+
+// DONORS
+if(donors.length === 0){
+document.getElementById("noDonors").classList.remove("hidden");
+}else{
+document.getElementById("noDonors").classList.add("hidden");
+
+donors.forEach((d,i)=>{
+donorTable.innerHTML += `
+<tr class="border-b hover:bg-gray-100">
+<td class="p-2">${d.name}</td>
+<td class="p-2">${d.age}</td>
+<td class="p-2 text-red-600 font-bold">${d.blood}</td>
+<td class="p-2">${d.city}</td>
+<td class="p-2">${d.phone}</td>
+<td class="p-2">
+<button onclick="deleteDonor(${i})"
+class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">
+Delete
+</button>
+</td>
+</tr>
+`;
+});
+}
+
+// REQUESTS
+if(requests.length === 0){
+document.getElementById("noRequests").classList.remove("hidden");
+}else{
+document.getElementById("noRequests").classList.add("hidden");
+
+requests.forEach((r,i)=>{
+requestTable.innerHTML += `
+<tr class="border-b hover:bg-gray-100">
+<td class="p-2">${r.pname}</td>
+<td class="p-2 text-red-600 font-bold">${r.blood}</td>
+<td class="p-2">${r.units}</td>
+<td class="p-2">${r.city}</td>
+<td class="p-2">${r.phone}</td>
+<td class="p-2">
+<button onclick="deleteRequest(${i})"
+class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">
+Delete
+</button>
+</td>
+</tr>
+`;
+});
+}
+}
+
+// DELETE
+function deleteDonor(i){
+let donors = JSON.parse(localStorage.getItem("donors")) || [];
+donors.splice(i,1);
+localStorage.setItem("donors",JSON.stringify(donors));
+loadData();
+}
+
+function deleteRequest(i){
+let requests = JSON.parse(localStorage.getItem("requests")) || [];
+requests.splice(i,1);
+localStorage.setItem("requests",JSON.stringify(requests));
+loadData();
+}
+
+// SEARCH
+function searchData(){
+let keyword = document.getElementById("searchInput").value.toLowerCase();
+
+let donors = JSON.parse(localStorage.getItem("donors")) || [];
+let requests = JSON.parse(localStorage.getItem("requests")) || [];
+
+let filteredDonors = donors.filter(d =>
+d.name.toLowerCase().includes(keyword) ||
+d.city.toLowerCase().includes(keyword)
+);
+
+let filteredRequests = requests.filter(r =>
+r.pname.toLowerCase().includes(keyword) ||
+r.city.toLowerCase().includes(keyword)
+);
+
+localStorage.setItem("tempDonors", JSON.stringify(filteredDonors));
+localStorage.setItem("tempRequests", JSON.stringify(filteredRequests));
+
+renderFiltered(filteredDonors, filteredRequests);
+}
+
+function resetData(){
+document.getElementById("searchInput").value="";
+loadData();
+}
+
+function renderFiltered(donors, requests){
+
+let donorTable = document.getElementById("donorTable");
+let requestTable = document.getElementById("requestTable");
+
+donorTable.innerHTML="";
+requestTable.innerHTML="";
+
+donors.forEach((d,i)=>{
+donorTable.innerHTML += `
+<tr class="border-b hover:bg-gray-100">
+<td class="p-2">${d.name}</td>
+<td class="p-2">${d.age}</td>
+<td class="p-2">${d.blood}</td>
+<td class="p-2">${d.city}</td>
+<td class="p-2">${d.phone}</td>
+<td class="p-2">-</td>
+</tr>
+`;
+});
+
+requests.forEach((r,i)=>{
+requestTable.innerHTML += `
+<tr class="border-b hover:bg-gray-100">
+<td class="p-2">${r.pname}</td>
+<td class="p-2">${r.blood}</td>
+<td class="p-2">${r.units}</td>
+<td class="p-2">${r.city}</td>
+<td class="p-2">${r.phone}</td>
+<td class="p-2">-</td>
+</tr>
+`;
+});
+}
+
+loadData();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Find Blood</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+* { transition: all 0.3s ease; }
+</style>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-900">
+
+<!-- 🔐 AUTH -->
+<script>
+if(!localStorage.getItem("currentUser")){
+window.location.href="login.html";
+}
+</script>
+
+<!-- 🔴 NAVBAR -->
+<nav class="bg-white text-red-700 shadow-md sticky top-0 z-50">
+<div class="container mx-auto flex justify-between items-center px-4 py-3">
+
+<h1 class="text-xl font-bold">🩸 BloodBank</h1>
+
+<ul class="hidden md:flex gap-6 font-medium">
+<li><a href="blood.html">Home</a></li>
+<li><a href="donor.html">Become Donor</a></li>
+<li class="text-red-600 font-bold underline">Find Blood</li>
+<li><a href="availability.html">Availability</a></li>
+<li><a href="request.html">Request</a></li>
+<li><a href="matches.html">Matches</a></li>
+<li><a href="manage.html">Manage</a></li>
+<li><button onclick="logout()" class="text-red-600 font-bold">Logout</button></li>
+</ul>
+
+<button id="menuBtn" class="md:hidden text-xl"><i class="fas fa-bars"></i></button>
+</div>
+
+<div id="mobileMenu" class="hidden flex-col md:hidden bg-white px-4 pb-4 space-y-3">
+<a href="home.html">Home</a>
+<a href="donor.html">Donor</a>
+<a href="search.html">Search</a>
+<a href="availability.html">Availability</a>
+<a href="request.html">Request</a>
+<a href="matches.html">Matches</a>
+<a href="manage.html">Manage</a>
+<button onclick="logout()" class="text-red-600 font-bold">Logout</button>
+</div>
+</nav>
+
+<!-- 🔥 HERO -->
+<section class="relative py-20 bg-gradient-to-br from-red-900 via-red-700 to-red-500 text-white text-center">
+<div data-aos="fade-down">
+<h1 class="text-4xl md:text-5xl font-bold mb-4">Find Blood Donors 🔍</h1>
+<p class="text-lg">Search by blood group and city instantly</p>
+</div>
+</section>
+
+<!-- 🔍 SEARCH BOX -->
+<section class="flex justify-center px-4 -mt-16 mb-10">
+<div class="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-4xl grid md:grid-cols-4 gap-4" data-aos="zoom-in">
+
+<select id="searchBlood" class="p-3 border rounded-lg focus:ring-2 focus:ring-red-500">
+<option value="">All Blood</option>
+<option>A+</option><option>A-</option>
+<option>B+</option><option>B-</option>
+<option>O+</option><option>O-</option>
+<option>AB+</option><option>AB-</option>
+</select>
+
+<input type="text" id="searchCity"
+placeholder="Enter City"
+class="p-3 border rounded-lg focus:ring-2 focus:ring-red-500">
+
+<button onclick="searchDonors()"
+class="bg-red-600 text-white rounded-lg hover:bg-red-700 font-bold">
+Search
+</button>
+
+<button onclick="resetSearch()"
+class="bg-gray-200 rounded-lg hover:bg-gray-300">
+Reset
+</button>
+
+</div>
+</section>
+
+<!-- 📋 RESULTS -->
+<section class="px-4 pb-16">
+
+<div class="max-w-6xl mx-auto bg-white p-6 rounded-2xl shadow-xl">
+
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-xl font-bold text-gray-800">Search Results</h3>
+<span id="count" class="text-sm text-gray-500"></span>
+</div>
+
+<!-- TABLE -->
+<div class="overflow-x-auto">
+<table class="w-full border rounded-lg overflow-hidden">
+
+<thead class="bg-red-600 text-white">
+<tr>
+<th class="p-3">Name</th>
+<th class="p-3">Age</th>
+<th class="p-3">Blood</th>
+<th class="p-3">City</th>
+<th class="p-3">Phone</th>
+</tr>
+</thead>
+
+<tbody id="resultTable" class="text-center"></tbody>
+
+</table>
+</div>
+
+<!-- EMPTY STATE -->
+<div id="emptyState" class="hidden text-center py-10">
+<i class="fas fa-search text-5xl text-gray-300 mb-4"></i>
+<p class="text-gray-500 text-lg">No donors found</p>
+</div>
+
+</div>
+</section>
+
+<!-- 🔻 FOOTER -->
+<footer class="bg-gray-900 text-gray-300 py-10">
+<div class="container mx-auto grid md:grid-cols-3 gap-8 px-6">
+
+<div>
+<h3 class="text-white text-xl font-bold mb-3">BloodBank</h3>
+<p>Connecting donors with those in need.</p>
+</div>
+
+<div>
+<h3 class="text-white font-bold mb-3">Quick Links</h3>
+<ul class="space-y-2">
+<li><a href="donor.html">Become Donor</a></li>
+<li><a href="request.html">Request Blood</a></li>
+</ul>
+</div>
+
+<div>
+<h3 class="text-white font-bold mb-3">Contact</h3>
+<p>Email: support@bloodbank.com</p>
+<p>Phone: +92 300 0000000</p>
+</div>
+
+</div>
+
+<p class="text-center mt-6 text-sm">© 2026 Blood Bank | All Rights Reserved</p>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script>
+AOS.init();
+
+document.getElementById("menuBtn").onclick = function(){
+  document.getElementById("mobileMenu").classList.toggle("hidden");
+};
+
+function logout(){
+  localStorage.removeItem("currentUser");
+
+  let toast = document.createElement("div");
+  toast.innerText = "Logged out successfully";
+  toast.className = "fixed top-6 right-6 bg-green-600 text-white px-5 py-3 rounded-lg shadow-lg z-50";
+
+  document.body.appendChild(toast);
+
+  setTimeout(()=>{
+    toast.remove();
+    window.location.href="login.html";
+  }, 1500);
+}
+
+
+// SEARCH
+function searchDonors(){
+let blood = document.getElementById("searchBlood").value;
+let city = document.getElementById("searchCity").value.toLowerCase().trim();
+
+let donors = JSON.parse(localStorage.getItem("donors")) || [];
+let table = document.getElementById("resultTable");
+let empty = document.getElementById("emptyState");
+let count = document.getElementById("count");
+
+table.innerHTML="";
+
+let filtered = donors.filter(d =>
+(blood === "" || d.blood === blood) &&
+(city === "" || d.city.toLowerCase().includes(city))
+);
+
+count.innerText = filtered.length + " result(s)";
+
+if(filtered.length === 0){
+empty.classList.remove("hidden");
+return;
+}
+
+empty.classList.add("hidden");
+
+filtered.forEach(d=>{
+table.innerHTML += `
+<tr class="border-b hover:bg-gray-100">
+<td class="p-3">${d.name}</td>
+<td class="p-3">${d.age}</td>
+<td class="p-3 font-bold text-red-600">${d.blood}</td>
+<td class="p-3">${d.city}</td>
+<td class="p-3">${d.phone}</td>
+</tr>
+`;
+});
+}
+
+// RESET
+function resetSearch(){
+document.getElementById("searchBlood").value="";
+document.getElementById("searchCity").value="";
+document.getElementById("resultTable").innerHTML="";
+document.getElementById("emptyState").classList.add("hidden");
+document.getElementById("count").innerText="";
+}
+</script>
+
+</body>
+</html>

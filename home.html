@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Blood Bank</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+* { transition: all 0.3s ease; }
+</style>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-900">
+
+<!-- 🔐 AUTH -->
+<script>
+if(!localStorage.getItem("currentUser")){
+window.location.href="login.html";
+}
+</script>
+
+<!-- 🔴 NAVBAR -->
+<nav class="bg-white text-red-700 shadow-md sticky top-0 z-50">
+<div class="container mx-auto flex justify-between items-center px-4 py-3">
+
+<h1 class="text-xl font-bold">🩸 BloodBank</h1>
+
+<ul class="hidden md:flex gap-6 font-medium">
+<li><a href="home.html" class="underline">Home</a></li>
+<li><a href="donor.html" class="hover:text-red-500">Become Donor</a></li>
+<li><a href="search.html" class="hover:text-red-500">Find Blood</a></li>
+<li><a href="availability.html" class="hover:text-red-500">Availability</a></li>
+<li><a href="request.html" class="hover:text-red-500">Request</a></li>
+<li><a href="matches.html" class="hover:text-red-500">Matches</a></li>
+<li><a href="manage.html" class="hover:text-red-500">Manage</a></li>
+<li><button onclick="logout()" class="text-red-600 font-bold">Logout</button></li>
+</ul>
+
+<button id="menuBtn" class="md:hidden text-xl"><i class="fas fa-bars"></i></button>
+</div>
+
+<div id="mobileMenu" class="hidden flex-col md:hidden bg-white px-4 pb-4 space-y-3">
+<a href="home.html" class="underline">Home</a>
+<a href="donor.html">Donor</a>
+<a href="search.html">Search</a>
+<a href="availability.html">Availability</a>
+<a href="request.html">Request</a>
+<a href="matches.html">Matches</a>
+<a href="manage.html">Manage</a>
+<button onclick="logout()" class="text-red-600 font-bold">Logout</button>
+</div>
+</nav>
+
+<!-- 🔥 HERO -->
+<section class="h-screen flex items-center justify-center relative overflow-hidden">
+
+<div class="absolute inset-0 bg-gradient-to-br from-red-900 via-red-700 to-red-500"></div>
+
+<div class="absolute w-72 h-72 bg-white opacity-10 rounded-full top-10 left-10 animate-pulse"></div>
+<div class="absolute w-96 h-96 bg-white opacity-10 rounded-full bottom-10 right-10 animate-ping"></div>
+
+<div class="relative text-center text-white px-6" data-aos="fade-up">
+
+<h1 class="text-5xl md:text-6xl font-extrabold mb-6">
+Donate Blood, Save Lives ❤️
+</h1>
+
+<p class="mb-6 text-lg md:text-xl">
+Your one donation can save up to 3 lives
+</p>
+
+<div class="space-x-4">
+<a href="search.html" class="bg-white text-red-700 px-6 py-3 rounded-lg shadow hover:bg-gray-200">
+Find Blood
+</a>
+
+<a href="donor.html" class="bg-black bg-opacity-30 px-6 py-3 rounded-lg hover:bg-opacity-50">
+Become Donor
+</a>
+</div>
+
+</div>
+</section>
+
+<!-- 💡 ABOUT -->
+<section class="py-16 text-center bg-cover bg-center"
+style="background-image:url('https://images.unsplash.com/photo-1576091160550-2173dba999ef');">
+
+<div class="bg-white bg-opacity-90 py-10 px-6">
+<h2 class="text-3xl font-bold mb-6 text-gray-800" data-aos="fade-up">About Us</h2>
+
+<p class="max-w-3xl mx-auto text-gray-700 text-lg" data-aos="fade-up" data-aos-delay="100">
+We connect blood donors with patients in need. Our system ensures fast, reliable,
+and easy access to blood donation services, helping save lives efficiently.
+</p>
+</div>
+</section>
+
+<!-- 📊 IMPACT -->
+<section class="py-16 bg-gray-100 text-center">
+<h2 class="text-3xl font-bold mb-10 text-gray-800">Our Impact</h2>
+
+<div class="grid md:grid-cols-3 gap-8 container mx-auto">
+
+<div class="bg-white p-8 rounded-xl shadow-lg hover:scale-105">
+<img src="https://cdn-icons-png.flaticon.com/512/2966/2966489.png" class="w-16 mx-auto mb-4">
+<h3 class="text-4xl font-bold text-red-600">1500+</h3>
+<p class="mt-2 text-gray-600">Active Donors</p>
+</div>
+
+<div class="bg-white p-8 rounded-xl shadow-lg hover:scale-105">
+<img src="https://cdn-icons-png.flaticon.com/512/3209/3209265.png" class="w-16 mx-auto mb-4">
+<h3 class="text-4xl font-bold text-red-600">1200+</h3>
+<p class="mt-2 text-gray-600">Blood Units</p>
+</div>
+
+<div class="bg-white p-8 rounded-xl shadow-lg hover:scale-105">
+<img src="https://cdn-icons-png.flaticon.com/512/2966/2966461.png" class="w-16 mx-auto mb-4">
+<h3 class="text-4xl font-bold text-red-600">300+</h3>
+<p class="mt-2 text-gray-600">Lives Saved</p>
+</div>
+
+</div>
+</section>
+
+<!-- 💡 WHY US -->
+<section class="py-16 bg-white">
+<h2 class="text-3xl font-bold text-center mb-10 text-gray-800">Why Choose Us?</h2>
+
+<div class="grid md:grid-cols-3 gap-8 container mx-auto">
+
+<div class="bg-gray-100 p-8 rounded-xl text-center hover:shadow-xl">
+<img src="https://cdn-icons-png.flaticon.com/512/833/833472.png" class="w-14 mx-auto mb-3">
+<h3 class="font-bold text-xl mb-2">Save Lives</h3>
+<p>Every donation helps someone in need</p>
+</div>
+
+<div class="bg-gray-100 p-8 rounded-xl text-center hover:shadow-xl">
+<img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" class="w-14 mx-auto mb-3">
+<h3 class="font-bold text-xl mb-2">Easy Process</h3>
+<p>Simple and fast registration system</p>
+</div>
+
+<div class="bg-gray-100 p-8 rounded-xl text-center hover:shadow-xl">
+<img src="https://cdn-icons-png.flaticon.com/512/751/751463.png" class="w-14 mx-auto mb-3">
+<h3 class="font-bold text-xl mb-2">Fast Search</h3>
+<p>Find blood instantly near you</p>
+</div>
+
+</div>
+</section>
+
+<!-- 🚀 CTA -->
+<section class="py-16 bg-red-600 text-white text-center">
+<h2 class="text-3xl font-bold mb-4">Become a Hero Today 🩸</h2>
+<p class="mb-6">Join our mission and save lives</p>
+
+<a href="donor.html" class="bg-white text-red-600 px-6 py-3 rounded-lg hover:bg-gray-200">
+Register Now
+</a>
+</section>
+
+<!-- 🔻 FOOTER -->
+<footer class="bg-gray-900 text-gray-300 py-10">
+
+<div class="container mx-auto grid md:grid-cols-3 gap-8 px-6">
+
+<div>
+<h3 class="text-white text-xl font-bold mb-3">BloodBank</h3>
+<p>Saving lives through blood donation.</p>
+</div>
+
+<div>
+<h3 class="text-white font-bold mb-3">Quick Links</h3>
+<ul class="space-y-2">
+<li><a href="donor.html">Become Donor</a></li>
+<li><a href="search.html">Find Blood</a></li>
+<li><a href="request.html">Request Blood</a></li>
+</ul>
+</div>
+
+<div>
+<h3 class="text-white font-bold mb-3">Contact</h3>
+<p><i class="fas fa-envelope mr-2"></i>support@bloodbank.com</p>
+<p><i class="fas fa-phone mr-2"></i>+92 300 0000000</p>
+</div>
+
+</div>
+
+<p class="text-center mt-6 text-sm">© 2026 Blood Bank | All Rights Reserved</p>
+</footer>
+
+<!-- SCRIPT -->
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script>
+AOS.init();
+
+document.getElementById("menuBtn").onclick = function(){
+document.getElementById("mobileMenu").classList.toggle("hidden");
+};
+
+function logout(){
+localStorage.removeItem("currentUser");
+
+let toast = document.createElement("div");
+toast.innerText = "Logged out successfully";
+toast.className = "fixed top-6 right-6 bg-green-600 text-white px-5 py-3 rounded-lg shadow-lg z-50";
+
+document.body.appendChild(toast);
+
+setTimeout(()=>{
+toast.remove();
+window.location.href="login.html";
+},1500);
+}
+</script>
+
+</body>
+</html>
